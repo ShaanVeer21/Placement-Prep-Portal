@@ -2,17 +2,8 @@ package com.shaanveer.placementportal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Topic {
 
     @Id
@@ -20,10 +11,46 @@ public class Topic {
     private Long id;
 
     private String name;
-    private boolean completed;
+    private boolean completed = false;
 
-    // Bi-directional many-to-many relationship handled from Student side
-    @ManyToMany(mappedBy = "topics")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
     @JsonIgnore
-    private List<Student> studentsWhoCompleted = new ArrayList<>();
+    private Student student;
+
+    public Topic() {}
+
+    public Topic(String name, Student student) {
+        this.name = name;
+        this.student = student;
+        this.completed = false;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 }

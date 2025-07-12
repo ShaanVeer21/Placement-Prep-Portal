@@ -2,16 +2,17 @@ package com.shaanveer.placementportal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = {"completedQuizzes", "completedTopics", "personalTopics"})
 public class Student {
 
     @Id
@@ -20,12 +21,16 @@ public class Student {
 
     private String name;
     private String email;
+    private String password;
+    private String role = "USER";
+
     private String currentTopic;
     private int totalQuizzesAttempted;
 
-    // 💡 List of topics the student is tracking
+    // 📘 Topics assigned personally (not necessarily completed)
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Topic> topics;
+    @JoinColumn(name = "student_id") // Unidirectional
+    private Set<Topic> personalTopics = new HashSet<>();
 
     // ✅ Completed quizzes
     @ManyToMany
@@ -34,10 +39,10 @@ public class Student {
         joinColumns = @JoinColumn(name = "student_id"),
         inverseJoinColumns = @JoinColumn(name = "quiz_id")
     )
-    @JsonIgnore // To avoid infinite loop
-    private List<Quiz> completedQuizzes;
+    @JsonIgnore
+    private Set<Quiz> completedQuizzes = new HashSet<>();
 
-    // ✅ Completed topics (used by Topic entity)
+    // ✅ Completed topics
     @ManyToMany
     @JoinTable(
         name = "student_completed_topics",
@@ -45,5 +50,5 @@ public class Student {
         inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
     @JsonIgnore
-    private List<Topic> completedTopics;
+    private Set<Topic> completedTopics = new HashSet<>();
 }

@@ -3,19 +3,21 @@ package com.shaanveer.placementportal.controller;
 import com.shaanveer.placementportal.dto.AuthResponse;
 import com.shaanveer.placementportal.dto.LoginRequest;
 import com.shaanveer.placementportal.dto.RegisterRequest;
-import com.shaanveer.placementportal.model.User;
-import com.shaanveer.placementportal.repository.UserRepository;
+import com.shaanveer.placementportal.model.Student;
+import com.shaanveer.placementportal.repository.StudentRepository;
 import com.shaanveer.placementportal.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     @Autowired
-    private UserRepository userRepo;
+    private StudentRepository studentRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -25,31 +27,30 @@ public class AuthController {
 
     @PostMapping("/register")
     public AuthResponse register(@RequestBody RegisterRequest request) {
-        if (userRepo.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+        if (studentRepo.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
         }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole("USER");
-        userRepo.save(user);
+        Student student = new Student();
+        student.setName(request.getName());
+        student.setEmail(request.getEmail());
+        student.setPassword(passwordEncoder.encode(request.getPassword()));
+        studentRepo.save(student);
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(student.getEmail());
         return new AuthResponse(token);
     }
 
-
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request) {
-        User user = userRepo.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        Student student = studentRepo.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+        if (!passwordEncoder.matches(request.getPassword(), student.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(student.getEmail());
         return new AuthResponse(token);
     }
 }

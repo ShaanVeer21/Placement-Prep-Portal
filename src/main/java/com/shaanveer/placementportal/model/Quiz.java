@@ -2,18 +2,8 @@ package com.shaanveer.placementportal.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Quiz {
 
     @Id
@@ -21,12 +11,70 @@ public class Quiz {
     private Long id;
 
     private String title;
-    private String topic;
-    private int totalQuestions;
-    private LocalDate createdAt = LocalDate.now();
+    private String description;
 
-    // Bi-directional many-to-many relationship handled from Student side
-    @ManyToMany(mappedBy = "completedQuizzes")
+    @Column(name = "total_questions", nullable = false)
+    private int totalQuestions;
+
+    private boolean attempted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id")
     @JsonIgnore
-    private List<Student> studentsWhoCompleted = new ArrayList<>();
+    private Student student;
+
+    public Quiz() {
+    }
+
+    public Quiz(String title, String description, int totalQuestions, Student student) {
+        this.title = title;
+        this.description = description;
+        this.totalQuestions = totalQuestions;
+        this.student = student;
+        this.attempted = false;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getTotalQuestions() {
+        return totalQuestions;
+    }
+
+    public void setTotalQuestions(int totalQuestions) {
+        this.totalQuestions = totalQuestions;
+    }
+
+    public boolean isAttempted() {
+        return attempted;
+    }
+
+    public void setAttempted(boolean attempted) {
+        this.attempted = attempted;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 }
