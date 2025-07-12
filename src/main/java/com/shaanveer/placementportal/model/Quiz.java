@@ -77,4 +77,8 @@ public class Quiz {
     public void setStudent(Student student) {
         this.student = student;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
