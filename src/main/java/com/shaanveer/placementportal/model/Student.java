@@ -27,12 +27,11 @@ public class Student {
     private String currentTopic;
     private int totalQuizzesAttempted;
 
-    // 📘 Topics assigned personally (not necessarily completed)
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "student_id") // Unidirectional
     private Set<Topic> personalTopics = new HashSet<>();
 
-    // ✅ Completed quizzes
     @ManyToMany
     @JoinTable(
         name = "student_completed_quizzes",
@@ -42,7 +41,6 @@ public class Student {
     @JsonIgnore
     private Set<Quiz> completedQuizzes = new HashSet<>();
 
-    // ✅ Completed topics
     @ManyToMany
     @JoinTable(
         name = "student_completed_topics",

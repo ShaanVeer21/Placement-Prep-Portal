@@ -28,7 +28,7 @@ public class StudentController {
     @Autowired
     private JwtService jwtService;
 
-    // ✅ Get current student
+    
     @GetMapping("/me")
     public ResponseEntity<Student> getLoggedInStudent(HttpServletRequest request) {
         String token = extractToken(request);
@@ -41,7 +41,7 @@ public class StudentController {
         return ResponseEntity.badRequest().build();
     }
 
-    // ✅ Mark topic as completed (uses token)
+    
     @PutMapping("/complete-topic/{topicId}")
     public ResponseEntity<String> markTopicCompleted(HttpServletRequest request,
                                                      @PathVariable Long topicId) {
@@ -50,7 +50,7 @@ public class StudentController {
         return ResponseEntity.ok("Topic marked as completed.");
     }
 
-    // ✅ Mark quiz as completed (uses token)
+   
     @PutMapping("/complete-quiz/{quizId}")
     public ResponseEntity<String> markQuizCompleted(HttpServletRequest request,
                                                     @PathVariable Long quizId) {
@@ -59,7 +59,7 @@ public class StudentController {
         return ResponseEntity.ok("Quiz marked as completed.");
     }
 
-    // 🔧 Internal / Admin only
+    
     @PostMapping
     public Student createStudent(@RequestBody Student student) {
         return studentRepo.save(student);
@@ -106,7 +106,7 @@ public class StudentController {
         }).orElseThrow(() -> new RuntimeException("Student not found"));
     }
 
-    // ⛏️ Helper Methods
+    
     private String extractToken(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         return (token != null && token.startsWith("Bearer ")) ? token.substring(7) : null;

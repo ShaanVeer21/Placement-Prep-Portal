@@ -45,8 +45,8 @@ public class StudentServiceImpl implements StudentService {
                 .orElseThrow(() -> new RuntimeException("Quiz not found for this student"));
 
         if (!quiz.isAttempted()) {
-            quiz.setAttempted(true);      // ✅ Mark it as attempted
-            quizRepo.save(quiz);          // ✅ Save the updated quiz
+            quiz.setAttempted(true);      
+            quizRepo.save(quiz);          
 
             student.getCompletedQuizzes().add(quiz);
             student.setTotalQuizzesAttempted(student.getTotalQuizzesAttempted() + 1);
